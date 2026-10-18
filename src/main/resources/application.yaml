@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: borrow-borrow
+  datasource:
+    url: jdbc:postgresql://localhost:5432/borrow
+    username: postgres
+    password: secret
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+
