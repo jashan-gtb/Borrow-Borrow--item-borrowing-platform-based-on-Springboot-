@@ -2,7 +2,7 @@ package com.jashan.borrow_borrow.service;
 
 import com.jashan.borrow_borrow.dto.BorrowRequestSendDto;
 import com.jashan.borrow_borrow.enums.RequestStatus;
-import com.jashan.borrow_borrow.models.BorrowRequestSend;
+import com.jashan.borrow_borrow.models.BorrowRequest;
 import com.jashan.borrow_borrow.models.Items;
 import com.jashan.borrow_borrow.models.Users;
 import com.jashan.borrow_borrow.repository.BorrowRequestRepository;
@@ -10,8 +10,9 @@ import com.jashan.borrow_borrow.repository.ItemRepository;
 import com.jashan.borrow_borrow.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +22,29 @@ public class BorrowRequestService {
     private final UserRepository userRepository;
 
     @Transactional
-    public BorrowRequestSendDto sendRequest(BorrowRequestSendDto dto, Users user, Items item){
+    public BorrowRequestSendDto sendRequest(BorrowRequestSendDto dto){
 
-        BorrowRequestSend borrowRequest=new BorrowRequestSend();
+        BorrowRequest borrowRequest=new BorrowRequest();
         borrowRequest.setRequest_time(dto.request_time());
         borrowRequest.setRequestStatus(RequestStatus.PENDING);
-        if (userRepository.existsById(dto.user_id())){
-            borrowRequest.setUser(user);
-        }
-        if (itemRepository.existsById(dto.item_id())){
-            borrowRequest.setItems(item);
-        }
 
+        Users sender= userRepository.findById(dto.sender_id()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        sender.setSendRequestStatus(RequestStatus.SENT);
 
+        Items items=itemRepository.findById(dto.item_id()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Users receiver= items.getUser();
+        receiver.setReceiveRequestStatus(RequestStatus.RECEIVED);
+
+        borrowRequest.setItems(items);
         borrowRequestRepository.save(borrowRequest);
+
+        receiver.addReceiveRequest(borrowRequest);
+        userRepository.save(receiver);
+        sender.addSendRequest(borrowRequest);
+        userRepository.save(sender);
+
         return dto;
     }
+
 }

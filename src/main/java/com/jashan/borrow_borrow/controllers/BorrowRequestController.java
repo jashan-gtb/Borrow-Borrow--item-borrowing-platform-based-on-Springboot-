@@ -21,13 +21,9 @@ public class BorrowRequestController {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    @PostMapping("/send/{idU}/{idI}")
-    public BorrowRequestSendDto sendRequest(@RequestBody BorrowRequestSendDto dto ,
-                                            @PathVariable Long idU,
-                                            @PathVariable Long idI){
-        Users user= userRepository.findById(idU).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Items item= itemRepository.findById(idI).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return service.sendRequest(dto,user,item);
+    @PostMapping("/send")
+    public BorrowRequestSendDto sendRequest(@RequestBody BorrowRequestSendDto dto ){
+        return service.sendRequest(dto);
     }
 
 }

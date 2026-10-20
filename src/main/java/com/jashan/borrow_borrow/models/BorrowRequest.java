@@ -7,14 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.print.attribute.standard.DateTimeAtCreation;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class BorrowRequestSend {
+public class BorrowRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +22,15 @@ public class BorrowRequestSend {
     private RequestStatus requestStatus;
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
     @JsonIgnoreProperties("requests")
-    private Users user;
+    private Users sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    @JsonIgnoreProperties("requests")
+    private Users receiver;
 
     @OneToOne
     @JoinColumn(name = "item_id")

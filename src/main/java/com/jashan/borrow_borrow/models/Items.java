@@ -20,7 +20,7 @@ public class Items {
     private String item_image;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "sender_id")
     @JsonIgnoreProperties("items")
     private Users user;
 

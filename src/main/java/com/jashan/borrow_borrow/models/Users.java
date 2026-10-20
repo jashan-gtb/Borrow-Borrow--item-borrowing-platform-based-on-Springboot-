@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,8 +19,6 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;
     private String user_name;
-    private String user_email;
-    private String user_password;
     private RequestStatus sendRequestStatus;
     private RequestStatus receiveRequestStatus;
 
@@ -27,6 +26,20 @@ public class Users {
     @JsonIgnoreProperties("user")
     private List<Items> items;
 
-    @OneToMany(mappedBy = "user")
-    private List<BorrowRequestSend> requests;
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnoreProperties("user")
+    private List<BorrowRequest> sendRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnoreProperties("user")
+    private List<BorrowRequest> receiveRequests= new ArrayList<>();
+
+    public void addSendRequest(BorrowRequest request){
+        this.sendRequests.add(request);
+        request.setSender(this);
+    }
+    public void addReceiveRequest(BorrowRequest request){
+        this.receiveRequests.add(request);
+        request.setReceiver(this);
+    }
 }

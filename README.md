@@ -86,7 +86,7 @@ The application will start on `http://localhost:8080`
 ## Data Models
 
 ### Users
-- `user_id`: Unique identifier
+- `sender_id`: Unique identifier
 - `user_name`: User's full name
 - `user_email`: User's email address
 - `user_password`: User's password

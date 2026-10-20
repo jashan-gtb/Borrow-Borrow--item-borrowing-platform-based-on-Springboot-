@@ -19,16 +19,24 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public ItemDto postItems(ItemDto dto, Users user){
+    public ResponseEntity<ItemDto> postItems(ItemDto dto, Users user){
 
         Items item= new Items();
+
         item.setItem_name(dto.item_name());
         item.setItem_description(dto.item_description());
         item.setItem_image(dto.item_image());
         item.setUser(user);
-        itemRepository.save(item);
+        Items savedItem =itemRepository.save(item);
 
-        return dto;
+        ItemDto itemDto= new ItemDto(
+                savedItem.getItem_id(),
+                savedItem.getItem_name(),
+                savedItem.getItem_description(),
+                savedItem.getItem_image()
+        );
+
+        return ResponseEntity.ok(itemDto);
 
     }
 }
