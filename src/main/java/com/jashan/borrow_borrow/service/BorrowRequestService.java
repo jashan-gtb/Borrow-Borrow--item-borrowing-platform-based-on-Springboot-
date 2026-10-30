@@ -1,6 +1,7 @@
 package com.jashan.borrow_borrow.service;
 
 import com.jashan.borrow_borrow.dto.BorrowRequestSendDto;
+import com.jashan.borrow_borrow.dto.RequestStatusDto;
 import com.jashan.borrow_borrow.enums.RequestStatus;
 import com.jashan.borrow_borrow.models.BorrowRequest;
 import com.jashan.borrow_borrow.models.Items;
@@ -29,12 +30,10 @@ public class BorrowRequestService {
         borrowRequest.setRequestStatus(RequestStatus.PENDING);
 
         Users sender= userRepository.findById(dto.sender_id()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        sender.setSendRequestStatus(RequestStatus.SENT);
 
         Items items=itemRepository.findById(dto.item_id()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Users receiver= items.getUser();
-        receiver.setReceiveRequestStatus(RequestStatus.RECEIVED);
 
         borrowRequest.setItems(items);
         borrowRequestRepository.save(borrowRequest);
@@ -45,6 +44,16 @@ public class BorrowRequestService {
         userRepository.save(sender);
 
         return dto;
+    }
+
+    public void acceptRequest(BorrowRequest request){
+        request.setRequestStatus(RequestStatus.APPROVED);
+        borrowRequestRepository.save(request);
+
+    }
+    public void rejectRequest(BorrowRequest request){
+        request.setRequestStatus(RequestStatus.REJECTED);
+        borrowRequestRepository.save(request);
     }
 
 }

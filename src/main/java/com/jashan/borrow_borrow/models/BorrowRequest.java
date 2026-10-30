@@ -19,6 +19,7 @@ public class BorrowRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long request_id;
     private LocalDateTime request_time;
+    @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
 
 
@@ -26,6 +27,7 @@ public class BorrowRequest {
     @JoinColumn(name = "sender_id")
     @JsonIgnoreProperties("requests")
     private Users sender;
+    private boolean active=true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
@@ -36,4 +38,5 @@ public class BorrowRequest {
     @JoinColumn(name = "item_id")
     @JsonIgnoreProperties("requests")
     private Items items;
+
 }

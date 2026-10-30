@@ -6,8 +6,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -19,19 +21,17 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;
     private String user_name;
-    private RequestStatus sendRequestStatus;
-    private RequestStatus receiveRequestStatus;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
     private List<Items> items;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonIgnoreProperties("user")
+    @JsonIgnoreProperties("sender")
     private List<BorrowRequest> sendRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver",cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonIgnoreProperties("user")
+    @JsonIgnoreProperties("receiver")
     private List<BorrowRequest> receiveRequests= new ArrayList<>();
 
     public void addSendRequest(BorrowRequest request){
@@ -42,4 +42,6 @@ public class Users {
         this.receiveRequests.add(request);
         request.setReceiver(this);
     }
+
+
 }

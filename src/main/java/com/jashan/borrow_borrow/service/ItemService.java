@@ -7,8 +7,10 @@ import com.jashan.borrow_borrow.repository.ItemRepository;
 import com.jashan.borrow_borrow.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -39,4 +41,11 @@ public class ItemService {
         return ResponseEntity.ok(itemDto);
 
     }
+    public void  deleteItem(Long id){
+        Items item=itemRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        item.setActive(false);
+        itemRepository.save(item);
+    }
+
+
 }

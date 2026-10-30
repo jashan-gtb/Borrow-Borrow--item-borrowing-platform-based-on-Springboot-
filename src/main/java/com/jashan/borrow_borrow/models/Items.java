@@ -18,6 +18,7 @@ public class Items {
     private String item_name;
     private String item_description;
     private String item_image;
+    private boolean active=true;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")

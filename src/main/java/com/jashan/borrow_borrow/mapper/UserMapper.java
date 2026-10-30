@@ -34,8 +34,6 @@ public class UserMapper {
         return new UserResponseDto(
                 user.getUser_id(),
                 user.getUser_name(),
-                user.getSendRequestStatus(),
-                user.getReceiveRequestStatus(),
                 itemDtos,
                 sendDtos,
                 receivedDTOs
@@ -43,6 +41,9 @@ public class UserMapper {
     }
     public static ItemDto toitemDto(Items item){
         if (item==null){
+            return null;
+        }
+        if (!item.isActive()){
             return null;
         }
         return new ItemDto(
@@ -56,7 +57,13 @@ public class UserMapper {
         if (request==null){
             return null;
         }
+        if (!request.isActive()){
+            return null;
+        }
         ItemDto itemDto=UserMapper.toitemDto(request.getItems());
+        if(itemDto==null){
+            return null;
+        }
         List<ItemDto> requestItems= itemDto!=null ?List.of(itemDto):List.of();
 
 
