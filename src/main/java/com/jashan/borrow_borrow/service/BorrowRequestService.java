@@ -1,7 +1,6 @@
 package com.jashan.borrow_borrow.service;
 
 import com.jashan.borrow_borrow.dto.BorrowRequestSendDto;
-import com.jashan.borrow_borrow.dto.RequestStatusDto;
 import com.jashan.borrow_borrow.enums.RequestStatus;
 import com.jashan.borrow_borrow.models.BorrowRequest;
 import com.jashan.borrow_borrow.models.Items;
@@ -26,7 +25,7 @@ public class BorrowRequestService {
     public BorrowRequestSendDto sendRequest(BorrowRequestSendDto dto){
 
         BorrowRequest borrowRequest=new BorrowRequest();
-        borrowRequest.setRequest_time(dto.request_time());
+        borrowRequest.setRequestTime(dto.request_time());
         borrowRequest.setRequestStatus(RequestStatus.PENDING);
 
         Users sender= userRepository.findById(dto.sender_id()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -47,12 +46,19 @@ public class BorrowRequestService {
     }
 
     public void acceptRequest(BorrowRequest request){
-        request.setRequestStatus(RequestStatus.APPROVED);
-        borrowRequestRepository.save(request);
-
+        if(request.isActive()) {
+            request.setRequestStatus(RequestStatus.APPROVED);
+            borrowRequestRepository.save(request);
+        }
     }
     public void rejectRequest(BorrowRequest request){
-        request.setRequestStatus(RequestStatus.REJECTED);
+        if(request.isActive()) {
+            request.setRequestStatus(RequestStatus.REJECTED);
+            borrowRequestRepository.save(request);
+        }
+    }
+    public void deleteRequest(BorrowRequest request){
+        request.setActive(false);
         borrowRequestRepository.save(request);
     }
 

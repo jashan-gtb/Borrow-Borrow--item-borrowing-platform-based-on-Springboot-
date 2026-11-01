@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,15 +16,19 @@ public class Items {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long item_id;
-    private String item_name;
-    private String item_description;
-    private String item_image;
+    private Long itemId;
+    private String itemName;
+    private String itemDescription;
+    private String itemImage;
     private boolean active=true;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
     @JsonIgnoreProperties("items")
     private Users user;
+
+    @OneToMany(mappedBy = "items")
+    @JsonIgnoreProperties("items")
+    private List<BorrowRequest> requests;
 
 }

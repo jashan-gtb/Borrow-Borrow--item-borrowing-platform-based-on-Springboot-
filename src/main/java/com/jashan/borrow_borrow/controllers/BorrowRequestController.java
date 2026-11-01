@@ -5,9 +5,8 @@ import com.jashan.borrow_borrow.dto.RequestStatusDto;
 import com.jashan.borrow_borrow.dto.RequestStatusResponseDto;
 import com.jashan.borrow_borrow.enums.RequestStatus;
 import com.jashan.borrow_borrow.models.BorrowRequest;
-import com.jashan.borrow_borrow.models.Items;
 import com.jashan.borrow_borrow.models.Users;
-import com.jashan.borrow_borrow.repository.ItemRepository;
+import com.jashan.borrow_borrow.repository.BorrowRequestRepository;
 import com.jashan.borrow_borrow.repository.UserRepository;
 import com.jashan.borrow_borrow.service.BorrowRequestService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class BorrowRequestController {
 
     private final BorrowRequestService service;
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
+    private final BorrowRequestRepository borrowRequestRepository;
 
     @PostMapping("/send")
     public BorrowRequestSendDto sendRequest(@RequestBody BorrowRequestSendDto dto ){
@@ -33,12 +32,15 @@ public class BorrowRequestController {
     public ResponseEntity<RequestStatusResponseDto> acceptRequest(@RequestBody RequestStatusDto dto){
         Users user= userRepository.findById(dto.userId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         BorrowRequest request= user.getReceiveRequests().stream()
-                .filter(borrowRequest -> borrowRequest.getRequest_id().equals(dto.requestId()))
+                .filter(borrowRequest -> borrowRequest.getRequestId().equals(dto.requestId()))
                 .findFirst()
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.acceptRequest(request);
+        if (!request.isActive()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntity.ok(new RequestStatusResponseDto(
-                request.getRequest_id(),
+                request.getRequestId(),
                 RequestStatus.APPROVED
         ));
     }
@@ -48,14 +50,23 @@ public class BorrowRequestController {
 
         Users user=userRepository.findById(dto.userId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         BorrowRequest request=user.getReceiveRequests().stream()
-                .filter(borrowRequest-> borrowRequest.getRequest_id().equals(dto.requestId()))
+                .filter(borrowRequest-> borrowRequest.getRequestId().equals(dto.requestId()))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.rejectRequest(request);
+        if (!request.isActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntity.ok(new RequestStatusResponseDto(
-                request.getRequest_id(),
+                request.getRequestId(),
                 RequestStatus.REJECTED
         ));
+    }
+
+    @PostMapping("/delete/{id}")
+    public void deleteRequest(@PathVariable Long id){
+        BorrowRequest request= borrowRequestRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        service.deleteRequest(request);
     }
 
 }

@@ -1,26 +1,36 @@
 package com.jashan.borrow_borrow.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jashan.borrow_borrow.enums.RequestStatus;
+import com.jashan.borrow_borrow.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Users {
+public class Users implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
-    private String user_name;
+    private Long userId;
+    @Column(unique = true,nullable = false)
+    private String userName;
+    @Column(unique = true, nullable = false)
+    private String userEmail;
+    @Column(nullable = false)
+    private String userPassword;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
@@ -43,5 +53,19 @@ public class Users {
         request.setReceiver(this);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.userPassword;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userName;
+    }
 
 }

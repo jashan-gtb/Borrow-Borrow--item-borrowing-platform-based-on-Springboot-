@@ -87,22 +87,22 @@ The application will start on `http://localhost:8080`
 
 ### Users
 - `sender_id`: Unique identifier
-- `user_name`: User's full name
-- `user_email`: User's email address
-- `user_password`: User's password
+- `userName`: User's full name
+- `userEmail`: User's email address
+- `userPassword`: User's password
 - `sendRequestStatus`: Status of sent requests
 - `receiveRequestStatus`: Status of received requests
 
 ### Items
-- `item_id`: Unique identifier
-- `item_name`: Name of the item
-- `item_description`: Description of the item
-- `item_image`: URL to item image
+- `itemId`: Unique identifier
+- `itemName`: Name of the item
+- `itemDescription`: Description of the item
+- `itemImage`: URL to item image
 - `user`: Owner of the item
 
 ### Borrow Requests
-- `request_id`: Unique identifier
-- `request_time`: Timestamp of request
+- `requestId`: Unique identifier
+- `requestTime`: Timestamp of request
 - `requestStatus`: Request status (NULL, PENDING, RECEIVED, APPROVED, REJECTED)
 - `user`: Requester
 - `items`: Item being requested

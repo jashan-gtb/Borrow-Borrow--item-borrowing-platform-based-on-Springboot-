@@ -6,15 +6,9 @@ import com.jashan.borrow_borrow.dto.UserResponseDto;
 import com.jashan.borrow_borrow.models.BorrowRequest;
 import com.jashan.borrow_borrow.models.Items;
 import com.jashan.borrow_borrow.models.Users;
-import org.apache.catalina.User;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.apache.logging.log4j.util.ServiceLoaderUtil.safeStream;
 
 public class UserMapper {
 
@@ -32,8 +26,8 @@ public class UserMapper {
                 .collect(Collectors.toList());
 
         return new UserResponseDto(
-                user.getUser_id(),
-                user.getUser_name(),
+                user.getUserId(),
+                user.getUsername(),
                 itemDtos,
                 sendDtos,
                 receivedDTOs
@@ -47,10 +41,10 @@ public class UserMapper {
             return null;
         }
         return new ItemDto(
-                item.getItem_id(),
-                item.getItem_name(),
-                item.getItem_description(),
-                item.getItem_image()
+                item.getItemId(),
+                item.getItemName(),
+                item.getItemDescription(),
+                item.getItemImage()
                 );
     }
     public static BorrowRequestSummaryDTO toBorrowRequests(BorrowRequest request){
@@ -68,12 +62,12 @@ public class UserMapper {
 
 
         return new BorrowRequestSummaryDTO(
-                request.getRequest_id(),
-                request.getRequest_time(),
+                request.getRequestId(),
+                request.getRequestTime(),
                 request.getRequestStatus(),
-                request.getSender() != null ? request.getSender().getUser_id() : null,
-                request.getSender() != null ? request.getSender().getUser_name() : null,
-                request.getReceiver() != null ? request.getReceiver().getUser_id() : null,
+                request.getSender() != null ? request.getSender().getUserId() : null,
+                request.getSender() != null ? request.getSender().getUsername() : null,
+                request.getReceiver() != null ? request.getReceiver().getUserId() : null,
                 requestItems
         );
     }

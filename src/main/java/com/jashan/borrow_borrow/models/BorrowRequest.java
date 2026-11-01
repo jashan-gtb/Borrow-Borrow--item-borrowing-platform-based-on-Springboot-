@@ -17,8 +17,8 @@ public class BorrowRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long request_id;
-    private LocalDateTime request_time;
+    private Long requestId;
+    private LocalDateTime requestTime;
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
 
@@ -34,7 +34,7 @@ public class BorrowRequest {
     @JsonIgnoreProperties("requests")
     private Users receiver;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     @JsonIgnoreProperties("requests")
     private Items items;
