@@ -6,6 +6,8 @@ import com.jashan.borrow_borrow.repository.ItemRepository;
 import com.jashan.borrow_borrow.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,7 +21,9 @@ public class ItemController {
     private final ItemService service;
 
     @PostMapping("/delete/{id}")
-    public void delete(@PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN') or @borrowSecurity.isOwnerOfItem(authentication, #id)")
+    public ResponseEntity<String> delete(@PathVariable Long id){
         service.deleteItem(id);
+        return ResponseEntity.ok("Item Deleted");
     }
 }

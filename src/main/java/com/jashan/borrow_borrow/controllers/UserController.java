@@ -2,6 +2,7 @@ package com.jashan.borrow_borrow.controllers;
 
 import com.jashan.borrow_borrow.dto.ItemDto;
 import com.jashan.borrow_borrow.dto.UserResponseDto;
+import com.jashan.borrow_borrow.enums.Role;
 import com.jashan.borrow_borrow.mapper.UserMapper;
 import com.jashan.borrow_borrow.models.Items;
 import com.jashan.borrow_borrow.models.Users;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +31,7 @@ public class UserController {
     private final ItemService itemService;
 
     @GetMapping("/view")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> findAllUser(){
 
         List<UserResponseDto> responseDtos= repository.findAll().stream()//takes all users to a conveyor belt one by one
@@ -38,6 +41,7 @@ public class UserController {
         return ResponseEntity.ok(responseDtos);
     }
     @GetMapping("/view/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.userId")
     public ResponseEntity<UserResponseDto> findUserById(@PathVariable Long id){
         Users user =repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         UserResponseDto response= UserMapper.touserResponseDto(user);
@@ -48,6 +52,7 @@ public class UserController {
         return repository.save(users);
     }
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.userId")
     public Users updateUser(@PathVariable Long id, @RequestBody Users users){
         if (!repository.existsById(id)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -55,11 +60,13 @@ public class UserController {
         return repository.save(users);
     }
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.userId")
     public void delete(@PathVariable Long id){
         repository.deleteById(id);
     }
 
     @PostMapping("/post-item/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.userId")
     public ResponseEntity<ItemDto> postItems(@RequestBody ItemDto dto, @PathVariable Long id){
         Users user= repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return itemService.postItems(dto,user);

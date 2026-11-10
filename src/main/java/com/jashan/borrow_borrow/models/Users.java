@@ -34,7 +34,7 @@ public class Users implements UserDetails{
 
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
-    private List<Items> items;
+    private List<Items> items = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnoreProperties("sender")
@@ -55,7 +55,7 @@ public class Users implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + getRole().name()));
     }
 
     @Override

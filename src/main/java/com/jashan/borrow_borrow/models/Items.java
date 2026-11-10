@@ -23,7 +23,7 @@ public class Items {
     private boolean active=true;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("items")
     private Users user;
 

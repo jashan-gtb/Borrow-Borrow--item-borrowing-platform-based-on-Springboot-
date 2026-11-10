@@ -12,6 +12,7 @@ import com.jashan.borrow_borrow.service.BorrowRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,10 +26,13 @@ public class BorrowRequestController {
     private final BorrowRequestRepository borrowRequestRepository;
 
     @PostMapping("/send")
+    @PreAuthorize("hasRole('ADMIN') or @borrowSecurity.isSenderOfRequest(authentication, #dto)")
     public BorrowRequestSendDto sendRequest(@RequestBody BorrowRequestSendDto dto ){
+
         return service.sendRequest(dto);
     }
     @PostMapping("/accept")
+    @PreAuthorize("hasRole('ADMIN') or @borrowSecurity.isReceiverOfRequest(authentication, #dto)")
     public ResponseEntity<RequestStatusResponseDto> acceptRequest(@RequestBody RequestStatusDto dto){
         Users user= userRepository.findById(dto.userId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         BorrowRequest request= user.getReceiveRequests().stream()
@@ -46,6 +50,7 @@ public class BorrowRequestController {
     }
 
     @PostMapping("/reject")
+    @PreAuthorize("hasRole('ADMIN') or @borrowSecurity.isReceiverOfRequest(authentication, #dto)")
     public ResponseEntity<RequestStatusResponseDto> rejectRequest(@RequestBody RequestStatusDto dto){
 
         Users user=userRepository.findById(dto.userId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -64,9 +69,11 @@ public class BorrowRequestController {
     }
 
     @PostMapping("/delete/{id}")
-    public void deleteRequest(@PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN') or @borrowSecurity.canDelete(authentication, #id)")
+    public ResponseEntity<String> deleteRequest(@PathVariable Long id){
         BorrowRequest request= borrowRequestRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.deleteRequest(request);
+        return ResponseEntity.ok("Request Deleted");
     }
 
 }
